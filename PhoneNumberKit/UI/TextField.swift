@@ -38,9 +38,32 @@ open class PhoneNumberTextField: UITextField, UITextFieldDelegate {
     public var defaultRegion = PhoneNumberKit.defaultRegionCode() {
         didSet {
             partialFormatter.defaultRegion = defaultRegion
+            setRegionPlaceholderIfNeeded()
         }
     }
-
+    
+    internal func setRegionPlaceholderIfNeeded() {
+        guard customPlaceholder == nil else { return }
+        guard let example = partialFormatter.currentMetadata?.mobile?.exampleNumber else { return }
+        placeholder = partialFormatter.formatPartial(example)
+    }
+    
+    public var customPlaceholder: String? {
+        didSet {
+            guard let custom = customPlaceholder else {
+                setRegionPlaceholderIfNeeded()
+                return
+            }
+            placeholder = custom
+        }
+    }
+    
+    public var isRawNumberOnly: Bool = false {
+        didSet {
+            partialFormatter.isRawNumberOnly = isRawNumberOnly
+        }
+    }
+    
     public var withPrefix: Bool = true {
         didSet {
             partialFormatter.withPrefix = withPrefix
